@@ -1,6 +1,7 @@
 class GameEngine {
     #ctx;
     #objects;
+    #collider
 
     /** @param {CanvasRenderingContext2D} ctx */
     constructor(ctx) {
@@ -9,8 +10,7 @@ class GameEngine {
 
         /** @member {GameObjectList} */
         this.#objects = new GameObjectList();
-
-        this.addObject(new Collider());
+        this.#collider = new Collider();
     }
 
     get ctx() { return this.#ctx; }
@@ -28,18 +28,19 @@ class GameEngine {
 
     start() {
         this.continue = true;
-        setTimeout(this.update, 20, this.#ctx, this.#objects, this);
+
+        setTimeout(this.update, 20, this.#ctx, this.#objects, this.#collider, this);
     }
 
-    update(ctx, objects, instance) {
+    update(ctx, objects, collider, instance) {
         ctx.clearRect(0, 0, instance.WIDTH, instance.HEIGHT);
 
         objects.foreach((obj) => {
-            obj.update(ctx, objects);
+            obj.update(ctx, objects, collider);
         });
 
         if (instance.continue)
-            setTimeout(instance.update, 20, ctx, objects, instance);
+            setTimeout(instance.update, Physics.framerate, ctx, objects, collider, instance);
     }
 
     stop() {

@@ -21,19 +21,21 @@ class Keyboard extends InputDevice {
         onkeydown = onkeyup = function (e) {
             e = e || event; // to deal with IE
             instance.keysState[e.keyCode] = e.type == 'keydown';
+
+            return false;
         }
     }
 
     get keysState() { return this.#keysState; }
 
     get isJump() {
-        return this.#keysState[this.#keyLeft];
-    }
-    get isMoveRight() {
         return this.#keysState[this.#keyUp];
     }
-    get isMoveLeft() {
+    get isMoveRight() {
         return this.#keysState[this.#keyRight];
+    }
+    get isMoveLeft() {
+        return this.#keysState[this.#keyLeft];
     }
     get isMoveDown() {
         return this.#keysState[this.#keyDown];

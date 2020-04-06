@@ -23,6 +23,7 @@ class GameObject {
      */
     addProperty(name, value) {
         return this.#properties[name] = value;
+
     }
 
     /**
@@ -37,12 +38,26 @@ class GameObject {
      * @param {String} name;
      */
     getProperty(name) {
-        this.#properties[name];
+        return this.#properties[name];
     }
 
     /** this method would be executed at each cycle of game 
      *  @param {CanvasRenderingContext2D} ctx
      *  @param {GameObjectList} objects
      */
-    update(ctx, objects) { }
+    update(ctx, objects, collider) {
+        var colDataA = this.getProperty(Collider.OBJECT_PROPERTY);
+
+        if (colDataA) {
+            objects.foreach((objB) => {
+                if (this != objB) {
+                    var colDataB = objB.getProperty(Collider.OBJECT_PROPERTY);
+
+                    if (colDataB) {
+                        collider.checkCollision(this, colDataA, objB, colDataB);
+                    }
+                }
+            });
+        }
+    }
 }

@@ -22,7 +22,29 @@ class Surface extends GameObject {
         );
     }
 
-    get startPoint() { this.#startPoint; }
-    get length() { this.#length; }
-    get orientation() { this.#orientation; }
+    get startPoint() { return this.#startPoint; }
+    get length() { return this.#length; }
+    get orientation() { return this.#orientation; }
+
+    update(ctx, objects) {
+        this.render(ctx);
+    }
+
+    render(ctx) {
+        ctx.beginPath();
+        ctx.moveTo(this.#startPoint.x, this.#startPoint.y);
+        ctx.lineWidth = 10;
+
+        switch (this.#orientation) {
+            case Orientation.HORIZONTAL:
+                ctx.lineTo(this.#startPoint.x + this.#length, this.#startPoint.y);
+                break;
+            case Orientation.VERTICAL:
+                ctx.lineTo(this.#startPoint.x, this.#startPoint.y + this.#length);
+                break;
+        }
+
+        ctx.stroke();
+        ctx.closePath();
+    }
 }

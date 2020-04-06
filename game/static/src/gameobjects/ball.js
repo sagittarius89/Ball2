@@ -22,7 +22,7 @@ class Ball extends GameObject {
         this.#radius = Physics.radius;
 
         this.addProperty(
-            Collider.COLLIDER_OBJECT_PROPERTY,
+            Collider.OBJECT_PROPERTY,
             Collider.COLLIDER_OBJECT_DATA(ColliderShape.CIRCLE, false)
         );
     }
@@ -42,14 +42,16 @@ class Ball extends GameObject {
      */
     set acc(vector) { this.#acc = vector; }
 
-    update(ctx, objects) {
+    update(ctx, objects, collider) {
+        super.update(ctx, objects, collider);
+
         var sign = new Vector2d(this.#acc.x >= 0 ? 1 : -1, this.#acc.y >= 0 ? 1 : -1);
         var accAbs = new Vector2d(Math.abs(this.#acc.x), Math.abs(this.#acc.y));
 
-        this.#acc = this.#acc.add(
+        this.#acc = this.#acc.substract(
             new Vector2d(
                 sign.x * Physics.friction * accAbs.x,
-                sign.y * Physics.friction * accAbs.y + Physics.grav
+                sign.y * Physics.friction * accAbs.y - Physics.grav
             )
         );
 
@@ -66,5 +68,6 @@ class Ball extends GameObject {
         ctx.lineWidth = 5;
         ctx.strokeStyle = '#003300';
         ctx.stroke();
+        ctx.closePath();
     }
 }

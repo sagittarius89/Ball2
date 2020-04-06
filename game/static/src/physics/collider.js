@@ -4,7 +4,7 @@ const ColliderShape = {
     SURFACE: "surface"
 }
 
-class Collider extends GameObject {
+class Collider {
     static get OBJECT_PROPERTY() {
         return "collision_object";
     }
@@ -22,34 +22,20 @@ class Collider extends GameObject {
      * @param {boolean} static
      */
     static COLLIDER_OBJECT_DATA(shape, static_) {
-        return { shape, static_ };
-    }
+        var result = {}
 
-    update(ctx, objects) {
-        objects.foreach((objA) => {
-            var colDataA = objA.getProperty(Collider.OBJECT_PROPERTY);
+        result[this.SHAPE_PROPERTY] = shape;
+        result[this.STATIC_PROPERTY] = static_;
 
-            if (colDataA) {
-                objects.foreach((objB) => {
-
-                    if (objA != objB) {
-                        var colDataB = objB.getProperty(Collider.OBJECT_PROPERTY);
-
-                        if (colDataB) {
-                            this.checkCollision(objA, colDataA, objB, colDataB);
-                        }
-                    }
-                });
-            }
-        });
+        return result;
     }
 
     checkCollision(objA, colDataA, objB, colDataB) {
-        let shapeA = colData[Collider.SHAPE_PROPERTY];
-        let shapeB = colData[Collider.SHAPE_PROPERTY];
+        let shapeA = colDataA[Collider.SHAPE_PROPERTY];
+        let shapeB = colDataB[Collider.SHAPE_PROPERTY];
 
         if (shapeA == ColliderShape.CIRCLE && shapeB == ColliderShape.CIRCLE) {
-            processCircleCircleCollision(
+            this.processCircleCircleCollision(
                 objA,
                 colDataA[Collider.STATIC_PROPERTY],
                 objB,
@@ -57,7 +43,7 @@ class Collider extends GameObject {
             );
         }
         else if (shapeA == ColliderShape.CIRCLE && shapeB == ColliderShape.SURFACE) {
-            processCircleShapeCollision(
+            this.processCircleShapeCollision(
                 objA,
                 colDataA[Collider.STATIC_PROPERTY],
                 objB,
@@ -71,38 +57,66 @@ class Collider extends GameObject {
     processCircleCircleCollision(objA, isStaticA, objB, isStaticB) {
         //resolveIntersectionWith(objA,objB);
 
-        let objAPos = objA.position();
-        let objBPos = objB.position();
 
-        let objAAcc = objA.acc();
-        let objBAcc = objB.acc();
+        //var collisionId = ball1.id + '&' + ball2.id;
 
-        //Unit normal vector uN is the unit-vector that links the two centers.
-        let uN = objAPos.substract(objBPos).normalize();
+        let objAPos = objA.position;
+        let objBPos = objB.position;
 
-        //Unit tangent vector uT is the unit-vector normal to uN. It's tangent to both the    two balls.
-        let uT = createVector2d(-uN.y, uN.x);
+        var distance = objAPos.getDistance(objBPos);
 
-        //Project the two balls velocities onto the collision axis(uT and uN vectors).
-        let v1n = uN.dot(objAAcc);
-        let v1t = uT.dot(objAAcc);
+        if (distance <= objA.radius + objB.radius) {
+            this.resolveIntersectionBallBall(objA, objB);
 
-        let v2n = uN.dot(objBAcc)
-        let v2t = uT.dot(objBAcc);
+            let objAAcc = objA.acc;
+            let objBAcc = objB.acc;
 
-        //Calculate the post collision normal velocities (tangent velocities don't change).
-        let v1nPost = v2n;
-        let v2nPost = v1n;
+            //Unit normal vector uN is the unit-vector that links the two centers.
+            let uN = objAPos.substract(objBPos).normalize();
 
-        //Convert scalar velocities to vectors.
-        let postV1N = uN.multiplyByFloat(v1nPost);
-        let postV1T = uT.multiplyByFloat(v1t);
-        let postV2N = uN.multiplyByFloat(v2nPost);
-        let postV2T = uT.multiplyByFloat(v2t);
+            //Unit tangent vector uT is the unit-vector normal to uN. It's tangent to both the    two balls.
+            let uT = new Vector2d(-uN.y, uN.x);
 
-        //Change the balls velocities.
-        objA.acc = postV1N.add(postV1T);
-        objB.acc = postV2N.add(postV2T);
+            //Project the two balls velocities onto the collision axis(uT and uN vectors).
+            let v1n = uN.dot(objAAcc);
+            let v1t = uT.dot(objAAcc);
+
+            let v2n = uN.dot(objBAcc)
+            let v2t = uT.dot(objBAcc);
+
+            //Calculate the post collision normal velocities (tangent velocities don't change).
+            let v1nPost = v2n;
+            let v2nPost = v1n;
+
+            //Convert scalar velocities to vectors.
+            let postV1N = uN.multiplyByFloat(v1nPost);
+            let postV1T = uT.multiplyByFloat(v1t);
+            let postV2N = uN.multiplyByFloat(v2nPost);
+            let postV2T = uT.multiplyByFloat(v2t);
+
+            //Change the balls velocities.
+            objA.acc = postV1N.add(postV1T);
+            objB.acc = postV2N.add(postV2T);
+        }
+    }
+
+    resolveIntersectionBallBall(ball1, ball2) {
+        var ball1Pos = ball1.position;
+        var ball2Pos = ball2.position;
+
+        var n = ball1Pos.substract(ball2Pos);
+
+        // How much the distance between centers is less than the radii's sum.
+        var offset = (ball1.radius + ball2.radius) - (n.getLength());
+        n = n.normalize();
+        n = n.multiplyByFloat(offset);
+
+        // Bring back the two ball according to their mass.
+        ball1Pos = ball1Pos.add(n = n.multiplyByFloat(0.5));
+        ball2Pos = ball2Pos.substract(n = n.multiplyByFloat(0.5));
+
+        ball1.position = ball1Pos;
+        ball2.position = ball2Pos;
     }
 
     processCircleShapeCollision(objA, isStaticA, objB, isStaticB) {
@@ -113,24 +127,25 @@ class Collider extends GameObject {
 
 
         if (orientation == Orientation.HORIZONTAL) {
-            if (position.y > level.y - objA.radius && position.y < level.y) {
-                objA.position = new Vector2d(position.x, level.y - Consts.radius);
+            if (position.y > level.y - objA.radius && position.y < level.y
+                && position.x > level.x && position.x < level.x + objB.length) {
+                objA.position = new Vector2d(position.x, level.y - objA.radius);
+                objA.acc = new Vector2d(acc.x, Physics.elasticity * acc.y);
             }
-            else if (position.y < level.y - objA.radius && position.y > level.y) {
-                objA.position = new Vector2d(position.x, level.y + Consts.radius);
+            else if (position.y < level.y + objA.radius && position.y > level.y
+                && position.x > level.x && position.x < level.x + objB.length) {
+                objA.position = new Vector2d(position.x, level.y + objA.radius);
+                objA.acc = new Vector2d(acc.x, Physics.elasticity * acc.y);
             }
-
-            objA.acc = new Vector2d(acc.x, Consts.Physics.elasticity * acc.y);
-        }
-        else {
-            if (position.x > level.x - objA.radius && position.x < level.x) {
-                objA.position = new Vector2d(level.x - Consts.radius, position.y);
+        } else {
+            if (position.x < level.x + objA.radius && position.x > level.x) {
+                objA.position = new Vector2d(level.x + objA.radius, position.y);
+                objA.acc = new Vector2d(acc.x * Physics.elasticity, acc.y);
             }
-            else if (position.x < level.x - objA.radius && position.x > level.x) {
-                objA.position = new Vector2d(level.x + Consts.radius, position.y);
+            else if (position.x > level.x - objA.radius && position.x < level.x) {
+                objA.position = new Vector2d(level.x - objA.radius, position.y);
+                objA.acc = new Vector2d(acc.x * Physics.elasticity, acc.y);
             }
-
-            objA.acc = new Vector2d(acc.x, Consts.Physics.elasticity * acc.x);
         }
     }
 }
