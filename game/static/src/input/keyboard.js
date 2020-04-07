@@ -10,7 +10,7 @@ class Keyboard extends InputDevice {
         super();
 
         this.#keyLeft = 37;
-        this.#keyUp = 38;
+        this.#keyUp = 32;
         this.#keyRight = 39;
         this.#keyDown = 40;
         this.#keyFire = -1;

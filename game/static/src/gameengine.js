@@ -27,6 +27,8 @@ class GameEngine {
         this.#objects.push(object);
     }
 
+    get objects() { return this.#objects; }
+
     get WIDTH() { return this.ctx.canvas.width }
     get HEIGHT() { return this.ctx.canvas.height; }
 

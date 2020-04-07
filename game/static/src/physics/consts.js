@@ -1,9 +1,9 @@
 const Physics = {
     friction: 0.01,
-    elasticity: -0.98,
-    grav: 0.05,
+    elasticity: -0.60,
+    grav: 0.06,
     radius: 50,
-    force: 0.25,
+    force: 0.60,
     framerate: 10
 }
 

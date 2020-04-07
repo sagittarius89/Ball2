@@ -149,5 +149,14 @@ class Collider {
                 objA.acc = new Vector2d(acc.x * Physics.elasticity, acc.y);
             }
         }
+
+        if (position.y > level.y - (objA.radius + 10) && position.y < level.y
+            && position.x > level.x && position.x < level.x + objB.length) {
+            objA.addProperty("jumpable", objB.id);
+        }
+        else {
+            if (objA.getProperty("jumpable") == objB.id)
+                objA.addProperty("jumpable", false);
+        }
     }
 }

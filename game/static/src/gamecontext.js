@@ -26,7 +26,7 @@ const GameContext = (function () {
     //right wall
     this.engine.addObject(new Surface(new Vector2d(this.engine.WIDTH, -100000), 101000, Orientation.VERTICAL));
 
-    for (var i = 0; i < 1000; ++i) {
+    for (var i = 0; i < 100; ++i) {
         var delta = Math.random() * this.engine.WIDTH;
 
         if (delta > this.engine.WIDTH * 5 / 6)
@@ -37,10 +37,13 @@ const GameContext = (function () {
         if (length < this.engine.WIDTH / 6)
             length = this.engine.WIDTH / 6;
 
+        if (length > this.engine.WIDTH / 2)
+            length = this.engine.WIDTH / 2;
+
         if (length + delta > this.engine.WIDTH)
             length = this.engine.WIDTH - delta;
 
-        this.engine.addObject(new Surface(new Vector2d(delta, -i * 300), length, Orientation.HORIZONTAL));
+        this.engine.addObject(new Surface(new Vector2d(delta, -i * 200 + 500), length, Orientation.HORIZONTAL));
     }
 
     this.playerBall = null;
@@ -52,6 +55,21 @@ const GameContext = (function () {
         this.engine.addObject(new Ball(Math.random() * this.canvas.width, Math.random() * this.canvas.height, "green"));
 
     this.engine.addObject(this.inputManager);
+
+    this.setInterval(() => {
+
+        if (engine.objects.length < 150)
+            engine.addObject(playerBall = new Ball(canvas.width * Math.random(), playerBall.position.y - 300, "yellow", this.player));
+
+        engine.objects.foreach(element => {
+            if (element.getProperty(Collider.OBJECT_PROPERTY) &&
+                element.getProperty(Collider.OBJECT_PROPERTY)[this.SHAPE_PROPERTY] == ColliderShape.CIRCLE &&
+                element.position.y > this.playerBall.position.y + 300) {
+
+                engine.objects.delete(element);
+            }
+        });
+    }, 1500);
 
     this.engine.start();
 }());

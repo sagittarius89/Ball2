@@ -21,8 +21,8 @@ class PlayerBall extends Ball {
         if (input.isMoveRight) {
             this.acc = this.acc.add(new Vector2d(Physics.force, 0));
         }
-        if (input.isJump) {
-            this.acc = this.acc.add(new Vector2d(0, -Physics.force * 2));
+        if (input.isJump && this.getProperty("jumpable")) {
+            this.acc = this.acc.add(new Vector2d(0, -6));
         }
         if (input.isMoveDown) {
             this.acc = this.acc.add(new Vector2d(0, Physics.force));
