@@ -22,7 +22,7 @@ class PlayerBall extends Ball {
             this.acc = this.acc.add(new Vector2d(Physics.force, 0));
         }
         if (input.isJump) {
-            this.acc = this.acc.add(new Vector2d(0, -Physics.force));
+            this.acc = this.acc.add(new Vector2d(0, -Physics.force * 2));
         }
         if (input.isMoveDown) {
             this.acc = this.acc.add(new Vector2d(0, Physics.force));

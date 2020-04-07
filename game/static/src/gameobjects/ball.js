@@ -42,7 +42,7 @@ class Ball extends GameObject {
      */
     set acc(vector) { this.#acc = vector; }
 
-    update(ctx, objects, collider) {
+    update(ctx, objects, collider, camera) {
         super.update(ctx, objects, collider);
 
         var sign = new Vector2d(this.#acc.x >= 0 ? 1 : -1, this.#acc.y >= 0 ? 1 : -1);
@@ -57,12 +57,12 @@ class Ball extends GameObject {
 
         this.#position = this.#position.add(this.#acc);
 
-        this.render(ctx);
+        this.render(ctx, camera);
     }
 
-    render(ctx) {
+    render(ctx, camera) {
         ctx.beginPath();
-        ctx.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI, false);
+        ctx.arc(this.position.x - camera.x, this.position.y - camera.y, this.radius, 0, 2 * Math.PI, false);
         ctx.fillStyle = this.color;
         ctx.fill();
         ctx.lineWidth = 5;

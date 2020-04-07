@@ -129,20 +129,22 @@ class Collider {
         if (orientation == Orientation.HORIZONTAL) {
             if (position.y > level.y - objA.radius && position.y < level.y
                 && position.x > level.x && position.x < level.x + objB.length) {
-                objA.position = new Vector2d(position.x, level.y - objA.radius);
+                objA.position = new Vector2d(position.x, level.y - objA.radius - 1);
                 objA.acc = new Vector2d(acc.x, Physics.elasticity * acc.y);
             }
             else if (position.y < level.y + objA.radius && position.y > level.y
-                && position.x > level.x && position.x < level.x + objB.length) {
+                && position.x > level.x && position.x < level.x + objB.length + 1) {
                 objA.position = new Vector2d(position.x, level.y + objA.radius);
                 objA.acc = new Vector2d(acc.x, Physics.elasticity * acc.y);
             }
         } else {
-            if (position.x < level.x + objA.radius && position.x > level.x) {
+            if (position.x < level.x + objA.radius && position.x > level.x
+                && position.y > level.y && position.y < level.y + objB.length) {
                 objA.position = new Vector2d(level.x + objA.radius, position.y);
                 objA.acc = new Vector2d(acc.x * Physics.elasticity, acc.y);
             }
-            else if (position.x > level.x - objA.radius && position.x < level.x) {
+            else if (position.x > level.x - objA.radius && position.x < level.x
+                && position.y > level.y && position.y < level.y + objB.length) {
                 objA.position = new Vector2d(level.x - objA.radius, position.y);
                 objA.acc = new Vector2d(acc.x * Physics.elasticity, acc.y);
             }

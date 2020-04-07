@@ -11,23 +11,42 @@ const GameContext = (function () {
     this.engine.addObject(this.inputManager);
 
     //roof
-    this.engine.addObject(new Surface(new Vector2d(5, 10), this.engine.WIDTH - 40, Orientation.HORIZONTAL));
+    //this.engine.addObject(new Surface(new Vector2d(5, 10), this.engine.WIDTH - 40, Orientation.HORIZONTAL));
 
 
     this.engine.addObject(new Surface(new Vector2d(this.engine.WIDTH / 3, this.engine.HEIGHT / 3), this.engine.WIDTH / 3, Orientation.HORIZONTAL));
 
 
     //floor
-    this.engine.addObject(new Surface(new Vector2d(10, this.engine.HEIGHT - 15), this.engine.WIDTH - 55, Orientation.HORIZONTAL));
+    this.engine.addObject(new Surface(new Vector2d(10, 1000), this.engine.WIDTH, Orientation.HORIZONTAL));
 
     //left wall
-    this.engine.addObject(new Surface(new Vector2d(10, 10), this.engine.HEIGHT - 20, Orientation.VERTICAL));
+    this.engine.addObject(new Surface(new Vector2d(10, -100000), 101000, Orientation.VERTICAL));
 
     //right wall
-    this.engine.addObject(new Surface(new Vector2d(this.engine.WIDTH - 40, 10), this.engine.HEIGHT - 20, Orientation.VERTICAL));
+    this.engine.addObject(new Surface(new Vector2d(this.engine.WIDTH, -100000), 101000, Orientation.VERTICAL));
 
-    this.engine.addObject(new PlayerBall(this.canvas.width / 2, this.canvas.height / 2, "red", this.player));
+    for (var i = 0; i < 1000; ++i) {
+        var delta = Math.random() * this.engine.WIDTH;
 
+        if (delta > this.engine.WIDTH * 5 / 6)
+            delta = this.engine.WIDTH * 5 / 6;
+
+        var length = Math.random() * (this.engine.WIDTH - delta);
+
+        if (length < this.engine.WIDTH / 6)
+            length = this.engine.WIDTH / 6;
+
+        if (length + delta > this.engine.WIDTH)
+            length = this.engine.WIDTH - delta;
+
+        this.engine.addObject(new Surface(new Vector2d(delta, -i * 300), length, Orientation.HORIZONTAL));
+    }
+
+    this.playerBall = null;
+    this.engine.addObject(this.playerBall = new PlayerBall(this.canvas.width / 2, this.canvas.height / 2, "red", this.player));
+
+    this.engine.camera.attachToObject(this.playerBall);
 
     for (var i = 0; i < 10; ++i)
         this.engine.addObject(new Ball(Math.random() * this.canvas.width, Math.random() * this.canvas.height, "green"));
