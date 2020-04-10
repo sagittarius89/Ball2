@@ -34,9 +34,9 @@ class GameObjectList {
      * @returns {boolean} true if removed
      */
     delete(object) {
-        const index = array.indexOf(object);
+        const index = this.#list.indexOf(object);
         if (index > -1) {
-            array.splice(index, 1);
+            this.#list.splice(index, 1);
 
             return true;
         }

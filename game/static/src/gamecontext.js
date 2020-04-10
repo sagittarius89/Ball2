@@ -43,7 +43,7 @@ const GameContext = (function () {
         if (length + delta > this.engine.WIDTH)
             length = this.engine.WIDTH - delta;
 
-        this.engine.addObject(new Surface(new Vector2d(delta, -i * 200 + 500), length, Orientation.HORIZONTAL));
+        this.engine.addObject(new Surface(new Vector2d(delta, -i * 300 + 500), length, Orientation.HORIZONTAL));
     }
 
     this.playerBall = null;
@@ -58,18 +58,21 @@ const GameContext = (function () {
 
     this.setInterval(() => {
 
-        if (engine.objects.length < 150)
-            engine.addObject(playerBall = new Ball(canvas.width * Math.random(), playerBall.position.y - 300, "yellow", this.player));
+        if (engine.objects.length < 200)
+            engine.addObject(new Ball(canvas.width * Math.random(), playerBall.position.y - 2000, "yellow",
+                Math.random() * (Physics.radius * 4)));
 
         engine.objects.foreach(element => {
             if (element.getProperty(Collider.OBJECT_PROPERTY) &&
-                element.getProperty(Collider.OBJECT_PROPERTY)[this.SHAPE_PROPERTY] == ColliderShape.CIRCLE &&
-                element.position.y > this.playerBall.position.y + 300) {
+                element.getProperty(Collider.OBJECT_PROPERTY)[Collider.SHAPE_PROPERTY] == ColliderShape.CIRCLE &&
+                element.position.y > playerBall.position.y + 1000) {
 
                 engine.objects.delete(element);
+
+                console.log(element.position.y, playerBall.position.y)
             }
         });
-    }, 1500);
+    }, 750);
 
     this.engine.start();
 }());

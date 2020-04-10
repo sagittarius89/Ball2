@@ -4,7 +4,7 @@ class Ball extends GameObject {
     #color;
     #radius
 
-    constructor(x, y, color) {
+    constructor(x, y, color, r) {
         super();
 
         /**
@@ -19,7 +19,11 @@ class Ball extends GameObject {
          * @member {String}
          */
         this.#color = color;
-        this.#radius = Physics.radius;
+
+        if (r)
+            this.#radius = r;
+        else
+            this.#radius = Physics.radius;
 
         this.addProperty(
             Collider.OBJECT_PROPERTY,

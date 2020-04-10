@@ -150,7 +150,7 @@ class Collider {
             }
         }
 
-        if (position.y > level.y - (objA.radius + 10) && position.y < level.y
+        if (position.y > level.y - (objA.radius + 20) && position.y < level.y
             && position.x > level.x && position.x < level.x + objB.length) {
             objA.addProperty("jumpable", objB.id);
         }
